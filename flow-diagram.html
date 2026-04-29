@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>소설 집필 워크플로우</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #f8f7f4;
+      color: #2c2c2c;
+      font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+      line-height: 1.7;
+      padding: 48px 24px 80px;
+    }
+
+    /* ── 헤더 ── */
+    .header {
+      max-width: 780px;
+      margin: 0 auto 56px;
+    }
+    .header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+    .header p {
+      font-size: 0.95rem;
+      color: #777;
+    }
+
+    /* ── 전체 컨테이너 ── */
+    .flow {
+      max-width: 780px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    /* ── Phase 카드 ── */
+    .phase {
+      display: flex;
+      gap: 24px;
+      padding: 0 0 0 0;
+    }
+
+    /* 왼쪽 타임라인 */
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-shrink: 0;
+      width: 48px;
+    }
+    .phase-badge {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      flex-shrink: 0;
+      color: #fff;
+      z-index: 1;
+    }
+    .line {
+      width: 2px;
+      flex: 1;
+      min-height: 32px;
+      background: #ddd;
+      margin: 6px 0;
+    }
+    .phase:last-child .line { display: none; }
+
+    /* 오른쪽 콘텐츠 */
+    .content {
+      flex: 1;
+      padding-bottom: 40px;
+    }
+    .phase-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      margin-top: 12px;
+    }
+    .phase-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      letter-spacing: -0.01em;
+    }
+    .phase-desc {
+      font-size: 0.9rem;
+      color: #555;
+      margin-bottom: 16px;
+    }
+
+    /* 카드 내 정보 박스 */
+    .info-box {
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 10px;
+      padding: 16px 20px;
+      font-size: 0.875rem;
+      margin-bottom: 12px;
+    }
+    .info-box + .info-box { margin-top: -4px; }
+
+    .info-row {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 5px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #999;
+      min-width: 56px;
+      padding-top: 1px;
+      letter-spacing: 0.03em;
+    }
+    .info-value { color: #333; }
+
+    /* 커맨드 뱃지 */
+    .cmd {
+      display: inline-block;
+      background: #1a1a2e;
+      color: #a8d8ea;
+      font-family: 'SF Mono', 'Consolas', monospace;
+      font-size: 0.8rem;
+      padding: 2px 10px;
+      border-radius: 4px;
+      letter-spacing: 0.02em;
+    }
+
+    /* 파일 경로 */
+    .path {
+      display: inline-block;
+      background: #f0f0f0;
+      color: #555;
+      font-family: 'SF Mono', 'Consolas', monospace;
+      font-size: 0.78rem;
+      padding: 1px 7px;
+      border-radius: 3px;
+    }
+
+    /* 분기 박스 */
+    .branch-box {
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    .branch-header {
+      padding: 10px 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      color: #fff;
+    }
+    .branch-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 12px 20px;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 0.875rem;
+    }
+    .branch-item:last-child { border-bottom: none; }
+    .branch-badge {
+      font-weight: 700;
+      font-size: 0.8rem;
+      min-width: 20px;
+      padding-top: 1px;
+    }
+    .branch-body { color: #444; }
+    .branch-body strong { color: #222; }
+    .branch-sub {
+      font-size: 0.8rem;
+      color: #888;
+      margin-top: 2px;
+    }
+
+    /* 아이디어 타입 테이블 */
+    .type-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    .type-table th {
+      text-align: left;
+      padding: 8px 12px;
+      background: #f5f5f5;
+      color: #666;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+    .type-table td {
+      padding: 9px 12px;
+      border-bottom: 1px solid #f0f0f0;
+      vertical-align: top;
+    }
+    .type-table tr:last-child td { border-bottom: none; }
+    .type-badge {
+      display: inline-block;
+      font-family: 'SF Mono', 'Consolas', monospace;
+      font-size: 0.75rem;
+      padding: 1px 7px;
+      border-radius: 3px;
+      font-weight: 600;
+    }
+
+    /* TOC 상태 흐름 */
+    .toc-flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+    .toc-state {
+      background: #fff;
+      border: 1.5px solid #ddd;
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #444;
+      white-space: nowrap;
+    }
+    .toc-arrow {
+      color: #bbb;
+      font-size: 1rem;
+      padding: 0 8px;
+    }
+
+    /* 색상 팔레트 */
+    .c1 { background: #6366f1; }   /* 인디고 — Phase 1 */
+    .c2 { background: #0ea5e9; }   /* 스카이 — Phase 2 */
+    .c3 { background: #10b981; }   /* 에메랄드 — Phase 3 */
+    .c4 { background: #f59e0b; }   /* 앰버 — Phase 4 */
+    .c5 { background: #ef4444; }   /* 레드 — Phase 5 */
+    .c6 { background: #8b5cf6; }   /* 퍼플 — Phase 6 */
+
+    .lc1 { color: #6366f1; }
+    .lc2 { color: #0ea5e9; }
+    .lc3 { color: #10b981; }
+    .lc4 { color: #f59e0b; }
+    .lc5 { color: #ef4444; }
+    .lc6 { color: #8b5cf6; }
+
+    .bc1 { background: #eef2ff; border-color: #c7d2fe; }
+    .bc2 { background: #f0f9ff; border-color: #bae6fd; }
+    .bc3 { background: #f0fdf4; border-color: #bbf7d0; }
+    .bc4 { background: #fffbeb; border-color: #fde68a; }
+    .bc5 { background: #fff1f2; border-color: #fecdd3; }
+    .bc6 { background: #faf5ff; border-color: #e9d5ff; }
+
+    /* 섹션 구분선 */
+    .section-divider {
+      max-width: 780px;
+      margin: 40px auto 48px;
+      border: none;
+      border-top: 1.5px solid #e5e5e5;
+    }
+
+    /* 하단 TOC 섹션 */
+    .toc-section {
+      max-width: 780px;
+      margin: 0 auto;
+    }
+    .toc-section h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    /* 팁 박스 */
+    .tip {
+      max-width: 780px;
+      margin: 48px auto 0;
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 10px;
+      padding: 20px 24px;
+    }
+    .tip h3 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #888;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .tip-item {
+      display: flex;
+      gap: 12px;
+      padding: 6px 0;
+      font-size: 0.875rem;
+      border-bottom: 1px solid #f5f5f5;
+    }
+    .tip-item:last-child { border-bottom: none; }
+    .tip-q { color: #888; min-width: 160px; }
+    .tip-a { color: #333; }
+  </style>
+</head>
+<body>
+
+  <!-- 헤더 -->
+  <div class="header">
+    <h1>소설 집필 워크플로우</h1>
+    <p>아이디어 발산부터 탈고까지 — 6단계 집필 프로세스 가이드</p>
+  </div>
+
+  <!-- Phase 플로우 -->
+  <div class="flow">
+
+    <!-- Phase 1 -->
+    <div class="phase">
+      <div class="timeline">
+        <div class="phase-badge c1">P1</div>
+        <div class="line"></div>
+      </div>
+      <div class="content">
+        <div class="phase-label lc1">Phase 1</div>
+        <div class="phase-title">아이디어 발산</div>
+        <div class="phase-desc">
+          쓸지 말지 결정하지 않아도 됩니다. 떠오른 것을 자유롭게 꺼내는 단계입니다.<br>
+          충분히 구체화되면 타입에 맞는 문서로 반영합니다.
+        </div>
+
+        <div class="info-box bc1">
+          <div class="info-row">
+            <span class="info-label">명령어</span>
+            <span class="info-value"><span class="cmd">/bs</span></span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">저장 위치</span>
+            <span class="info-value"><span class="path">docs/idea/{타입}/</span></span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">상태 흐름</span>
+            <span class="info-value">구상 중 → 검토 가능 → 반영 완료</span>
+          </div>
+        </div>
+
+        <div class="info-box">
+          <table class="type-table">
+            <thead>
+              <tr>
+                <th>타입</th>
+                <th>반영 시 목적지</th>
+                <th>다음 단계</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="type-badge" style="background:#eef2ff;color:#6366f1">character</span></td>
+                <td><span class="path">docs/characters/</span></td>
+                <td><span class="cmd">/wiki</span></td>
+              </tr>
+              <tr>
+                <td><span class="type-badge" style="background:#f0f9ff;color:#0ea5e9">setting</span></td>
+                <td><span class="path">docs/world/</span></td>
+                <td><span class="cmd">/wiki</span></td>
+              </tr>
+              <tr>
+                <td><span class="type-badge" style="background:#f0fdf4;color:#10b981">story</span></td>
+                <td><span class="path">docs/TODO.md</span></td>
+                <td><span class="cmd">/plan</span></td>
+              </tr>
+              <tr>
+                <td><span class="type-badge" style="background:#faf5ff;color:#8b5cf6">theme</span></td>
+                <td><span class="path">docs/synopsis.md</span></td>
+                <td>—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 2 -->
+    <div class="phase">
+      <div class="timeline">
+        <div class="phase-badge c2">P2</div>
+        <div class="line"></div>
+      </div>
+      <div class="content">
+        <div class="phase-label lc2">Phase 2</div>
+        <div class="phase-title">기획 확정</div>
+        <div class="phase-desc">
+          소설에 쓰기로 결정한 요소들을 설계하고 문서로 남깁니다.<br>
+          인물·세계관·사건을 구체화하고, 전체 줄거리를 잡아갑니다.
+        </div>
+
+        <div class="info-box bc2">
+          <div class="info-row">
+            <span class="info-label">명령어</span>
+            <span class="info-value"><span class="cmd">/wiki</span></span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">인물</span>
+            <span class="info-value"><span class="path">docs/characters/{이름}.md</span></span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">세계관</span>
+            <span class="info-value"><span class="path">docs/world/setting.md</span> · <span class="path">docs/world/rules.md</span></span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">사건</span>
+            <span class="info-value"><span class="path">docs/events/{사건명}.md</span></span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">줄거리</span>
+            <span class="info-value"><span class="path">docs/synopsis.md</span> — 처음엔 한 줄 요약만 써도 됩니다</span>
+          </div>
+        </div>
+
+        <div class="info-box">
+          <div class="info-row">
+            <span class="info-label">이슈 등록</span>
+            <span class="info-value">
+              미확정·모순·플롯 구멍은 <span class="path">docs/issues.md</span>에 등급과 함께 기록합니다<br>
+              <span style="font-size:0.82rem;color:#888">🔴 blocker — 집필 불가 &nbsp;·&nbsp; 🟡 normal — 다음 챕터 전까지 &nbsp;·&nbsp; 🟢 deferred — 나중에</span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 3 -->
+    <div class="phase">
+      <div class="timeline">
+        <div class="phase-badge c3">P3</div>
+        <div class="line"></div>
+      </div>
+      <div class="content">
+        <div class="phase-label lc3">Phase 3</div>
+        <div class="phase-title">챕터 설계</div>
+        <div class="phase-desc">
+          집필 전에 챕터를 씬 단위로 쪼개어 설계합니다.<br>
+          건너뛰어도 집필할 수 있지만, 구조 문제를 미리 잡아 나중에 전면 재작업하는 상황을 줄입니다.
+        </div>
+
+        <div class="info-box bc3">
+          <div class="info-row">
+            <span class="info-label">명령어</span>
+            <span class="info-value"><span class="cmd">/plan</span></span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">결과물</span>
+            <span class="info-value"><span class="path">docs/plans/plan_ch{번호}.md</span></span>
+          </div>
+        </div>
+
+        <div class="info-box">
+          <div class="info-row">
+            <span class="info-label">설계 항목</span>
+            <span class="info-value">씬 목록 · 목적 · 시점 인물 · 감정선 · 복선 설치/회수 · 묘사 포인트</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">주의</span>
+            <span class="info-value">🔴 blocker 이슈가 있으면 먼저 해결 후 진행합니다</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 4 -->
+    <div class="phase">
+      <div class="timeline">
+        <div class="phase-badge c4">P4</div>
+        <div class="line"></div>
+      </div>
+      <div class="content">
+        <div class="phase-label lc4">Phase 4</div>
+        <div class="phase-title">집필</div>
+        <div class="phase-desc">
+          계획서를 바탕으로 원고를 씁니다.<br>
+          새로 등장한 인물·장소·사건은 집필 직후 자동으로 설정 문서에 추가됩니다.
+        </div>
+
+        <div class="info-box bc4">
+          <div class="info-row">
+            <span class="info-label">명령어</span>
+            <span class="info-value"><span class="cmd">/write</span> &nbsp;·&nbsp; <span class="cmd">/style</span> (문체 적용)</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">원고 위치</span>
+            <span class="info-value"><span class="path">src/part{N}_{파트제목}/ch{N}_{챕터제목}.md</span></span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">기본 문체</span>
+            <span class="info-value"><span class="path">.claude/styles/default.md</span> 가 있으면 자동 적용</span>
+          </div>
+        </div>
+
+        <div class="info-box">
+          <div class="info-row">
+            <span class="info-label">TOC 전환</span>
+            <span class="info-value">
+              <div class="toc-flow">
+                <div class="toc-state">미집필</div>
+                <div class="toc-arrow">→</div>
+                <div class="toc-state">집필 중</div>
+                <div class="toc-arrow">→</div>
+                <div class="toc-state">초고 완료</div>
+              </div>
+            </span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">집필 후</span>
+            <span class="info-value">characters · world · events 자동 갱신 · synopsis.md 업데이트 · TODO 완료 체크</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 5 -->
+    <div class="phase">
+      <div class="timeline">
+        <div class="phase-badge c5">P5</div>
+        <div class="line"></div>
+      </div>
+      <div class="content">
+        <div class="phase-label lc5">Phase 5</div>
+        <div class="phase-title">검토</div>
+        <div class="phase-desc">
+          완성된 챕터를 문장·감정·구조·일관성 4가지 축으로 점검합니다.<br>
+          결과에 따라 세 가지 경로로 분기합니다.
+        </div>
+
+        <div class="info-box bc5">
+          <div class="info-row">
+            <span class="info-label">명령어</span>
+            <span class="info-value"><span class="cmd">/review</span></span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">검토 축</span>
+            <span class="info-value">문장 리듬 · 감정 묘사 · 씬 구조 · 설정 일관성</span>
+          </div>
+        </div>
+
+        <div class="branch-box">
+          <div class="branch-header" style="background:#ef4444">검토 결과 분기</div>
+          <div class="branch-item">
+            <div class="branch-badge" style="color:#16a34a">A</div>
+            <div class="branch-body">
+              <strong>통과</strong> — 전체적으로 문제 없음
+              <div class="branch-sub">→ TOC 상태 <strong>검토 완료</strong>로 갱신 · synopsis.md 업데이트</div>
+            </div>
+          </div>
+          <div class="branch-item">
+            <div class="branch-badge" style="color:#d97706">B</div>
+            <div class="branch-body">
+              <strong>일부 수정</strong> — 문장·표현·감정 묘사 수준의 문제
+              <div class="branch-sub">→ 원고에 <code style="font-size:0.78rem;background:#f5f5f5;padding:1px 5px;border-radius:3px">&lt;!-- [B] 내용 --&gt;</code> 주석 삽입 후 <span class="cmd">/revise</span> 처리</div>
+            </div>
+          </div>
+          <div class="branch-item">
+            <div class="branch-badge" style="color:#ef4444">C</div>
+            <div class="branch-body">
+              <strong>구조 문제</strong> — 씬 순서·인물 동기·복선·설정 충돌
+              <div class="branch-sub">→ 원고에 <code style="font-size:0.78rem;background:#f5f5f5;padding:1px 5px;border-radius:3px">&lt;!-- [C] 내용 --&gt;</code> 주석 삽입 후 <span class="cmd">/revise</span> 처리</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-box" style="font-size:0.82rem;color:#666">
+          <div class="info-row">
+            <span class="info-label" style="color:#bbb">B 증상</span>
+            <span class="info-value">문장·표현이 어색하다 · 감정 묘사가 약하다</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label" style="color:#bbb">C 증상</span>
+            <span class="info-value">씬 순서가 이상하다 · 인물 행동에 납득이 안 된다 · 복선이 누락됐다 · 설정 문서와 충돌한다</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 6 -->
+    <div class="phase">
+      <div class="timeline">
+        <div class="phase-badge c6">P6</div>
+        <div class="line"></div>
+      </div>
+      <div class="content">
+        <div class="phase-label lc6">Phase 6</div>
+        <div class="phase-title">수정</div>
+        <div class="phase-desc">
+          검토에서 삽입된 주석을 하나씩 처리합니다.<br>
+          [C] 주석 먼저, [B] 주석 나중 순서로 진행합니다.
+        </div>
+
+        <div class="info-box bc6">
+          <div class="info-row">
+            <span class="info-label">명령어</span>
+            <span class="info-value"><span class="cmd">/revise</span></span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">처리 순서</span>
+            <span class="info-value">[C] 구조 문제 먼저 → [B] 문장 수정 나중</span>
+          </div>
+        </div>
+
+        <div class="info-box">
+          <div class="info-row">
+            <span class="info-label">B 처리</span>
+            <span class="info-value">해당 문장·문단 직접 수정 후 주석 제거</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">C 처리</span>
+            <span class="info-value">계획서(<span class="path">docs/plans/</span>) 재설계 → 원고 재집필 → 집필 후 처리 동일 수행</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">완료 시</span>
+            <span class="info-value">모든 주석 제거 → 사용자 확인 → TOC <strong>검토 완료</strong> · synopsis.md 업데이트</span>
+          </div>
+        </div>
+
+        <div class="toc-flow" style="margin-top:8px">
+          <div class="toc-state">초고 완료</div>
+          <div class="toc-arrow">→</div>
+          <div class="toc-state" style="border-color:#8b5cf6;color:#8b5cf6">수정 중</div>
+          <div class="toc-arrow">→</div>
+          <div class="toc-state" style="border-color:#16a34a;color:#16a34a">검토 완료</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.flow -->
+
+  <!-- 구분선 -->
+  <hr class="section-divider">
+
+  <!-- TOC 전체 상태 흐름 -->
+  <div class="toc-section">
+    <h2>챕터 상태 전환 흐름 (src/TOC.md)</h2>
+    <div class="info-box">
+      <div class="toc-flow" style="padding:8px 0">
+        <div class="toc-state">미집필</div>
+        <div class="toc-arrow">→</div>
+        <div class="toc-state" style="border-color:#f59e0b;color:#b45309">집필 중</div>
+        <div class="toc-arrow">→</div>
+        <div class="toc-state" style="border-color:#ef4444;color:#dc2626">초고 완료</div>
+        <div class="toc-arrow">→</div>
+        <div class="toc-state" style="border-color:#16a34a;color:#16a34a">검토 완료</div>
+      </div>
+      <div style="margin-top:14px;font-size:0.82rem;color:#888;line-height:1.9">
+        <div>· <strong style="color:#555">미집필 → 집필 중</strong> &nbsp;: 집필 시작 시 (blocker 없음 확인 후)</div>
+        <div>· <strong style="color:#555">집필 중 → 초고 완료</strong> &nbsp;: 챕터 원고 완성 시</div>
+        <div>· <strong style="color:#555">초고 완료 → 검토 완료</strong> &nbsp;: A 통과 또는 /revise 전체 완료 후 승인 시</div>
+        <div>· B/C 판정 시 주석이 남아있는 동안은 <strong style="color:#555">초고 완료</strong> 상태를 유지합니다</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 팁 -->
+  <div class="tip">
+    <h3>막힐 때</h3>
+    <div class="tip-item">
+      <div class="tip-q">뭘 써야 할지 모르겠다</div>
+      <div class="tip-a"><span class="cmd">/bs</span> 로 브레인스토밍부터 시작하세요</div>
+    </div>
+    <div class="tip-item">
+      <div class="tip-q">설정이 기억 안 난다</div>
+      <div class="tip-a"><span class="path">docs/overview.md</span> 를 먼저 열어 파일 위치를 파악하세요</div>
+    </div>
+    <div class="tip-item">
+      <div class="tip-q">집필이 막힌다</div>
+      <div class="tip-a"><span class="path">docs/plans/</span> 계획서를 다시 읽거나 씬을 더 잘게 쪼개보세요</div>
+    </div>
+    <div class="tip-item">
+      <div class="tip-q">문체를 통일하고 싶다</div>
+      <div class="tip-a"><span class="cmd">/style</span> 로 분석 후 <span class="path">.claude/styles/default.md</span> 로 저장하면 자동 적용됩니다</div>
+    </div>
+    <div class="tip-item">
+      <div class="tip-q">검토·수정 순서</div>
+      <div class="tip-a"><span class="cmd">/review</span> → <span class="cmd">/revise</span> 순서로 진행합니다</div>
+    </div>
+  </div>
+
+</body>
+</html>
