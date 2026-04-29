@@ -1,0 +1,15 @@
+{
+  "name": "nvwriter-plugin",
+  "owner": {
+    "name": "nnopia",
+    "email": ""
+  },
+  "plugins": [
+    {
+      "name": "nvwriter",
+      "source": ".",
+      "description": "Claude Code용 소설 집필 플러그인. 아이디어 구상부터 원고 집필·검토·수정까지 전 과정을 커맨드로 지원합니다.",
+      "version": "1.0.0"
+    }
+  ]
+}
