@@ -2,16 +2,5 @@
   "name": "nvwriter",
   "version": "1.0.0",
   "description": "Claude Code용 소설 집필 플러그인. 아이디어 구상부터 원고 집필·검토·수정까지 전 과정을 커맨드로 지원합니다.",
-  "author": "nnopia",
-  "repository": "https://github.com/nnopia/nvwriter-plugin",
-  "skills": [
-    { "name": "init",   "path": "skills/init/SKILL.md"   },
-    { "name": "bs",     "path": "skills/bs/SKILL.md"     },
-    { "name": "wiki",   "path": "skills/wiki/SKILL.md"   },
-    { "name": "plan",   "path": "skills/plan/SKILL.md"   },
-    { "name": "write",  "path": "skills/write/SKILL.md"  },
-    { "name": "style",  "path": "skills/style/SKILL.md"  },
-    { "name": "review", "path": "skills/review/SKILL.md" },
-    { "name": "revise", "path": "skills/revise/SKILL.md" }
-  ]
+  "author": { "name": "nnopia" }
 }
