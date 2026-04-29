@@ -14,7 +14,8 @@ Claude Code용 소설 집필 플러그인입니다. 소프트웨어 개발 방�
 
 ```bash
 # Claude Code 내에서 실행
-/plugin install nvwriter
+/plugin marketplace add nnopia/nvwriter-plugin
+/plugin install nvwriter@nvwriter-plugin
 ```
 
 또는 수동 설치:
