@@ -1,6 +1,6 @@
 # nvwriter
 
-![Version](https://img.shields.io/badge/Version-1.0.4-blue)
+![Version](https://img.shields.io/badge/Version-1.0.5-blue)
 ![Tool](https://img.shields.io/badge/Tool-Claude_Code-blueviolet)
 ![Type](https://img.shields.io/badge/Type-Plugin-green)
 
