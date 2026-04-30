@@ -16,11 +16,12 @@ description: 소설 원고 집필. 새 챕터를 처음 쓰거나 기존 챕터�
 ## 집필 전 준비
 
 챕터를 쓰기 전 반드시 읽는다:
-1. `docs/plans/plan_ch{번호}.md` — 씬 순서·감정선·복선 포인트 확인
+1. `docs/issues.md` — 🔴 blocker 이슈 유무 확인. blocker가 있으면 사용자에게 알리고 해결 후 진행한다
+2. `docs/plans/plan_ch{번호}.md` — 씬 순서·감정선·복선 포인트 확인
    - 계획서가 없으면 집필 전에 사용자에게 계획서 작성을 먼저 제안한다. 사용자가 계획서 없이 진행을 원하면 그대로 따른다.
-2. 해당 챕터 등장 인물의 `docs/characters/{이름}.md` — 말투·성격·관계 확인
-3. 필요 시 `docs/world/setting.md`, 관련 `docs/events/` 문서
-4. `.claude/styles/` — 스타일 프로필 확인:
+3. 해당 챕터 등장 인물의 `docs/characters/{이름}.md` — 말투·성격·관계 확인
+4. 필요 시 `docs/world/setting.md`, 관련 `docs/events/` 문서
+5. `.claude/styles/` — 스타일 프로필 확인:
    - 사용자가 특정 스타일을 지정했으면 해당 파일을 읽는다
    - 지정이 없으면 `.claude/styles/default.md`가 있는지 확인하고, 있으면 자동으로 적용한다
 
@@ -56,7 +57,7 @@ description: 소설 원고 집필. 새 챕터를 처음 쓰거나 기존 챕터�
 
 ## 집필 후 처리
 
-챕터 완료 직후 자동으로 수행한다. 문서 형식은 `.claude/commands/wiki.md` 참조:
+챕터 완료 직후 자동으로 수행한다. 문서 형식은 `docs/characters/_template.md`, `docs/events/_template.md` 참조:
 - 새 인물 등장 → `docs/characters/{이름}.md` 생성
 - 새 장소·공간 등장 → `docs/world/setting.md` 추가
 - 새 사건·규칙 확정 → `docs/events/{사건명}.md` 생성

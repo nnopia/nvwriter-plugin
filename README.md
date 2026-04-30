@@ -1,6 +1,6 @@
 # nvwriter
 
-![Version](https://img.shields.io/badge/Version-1.0.2-blue)
+![Version](https://img.shields.io/badge/Version-1.0.3-blue)
 ![Tool](https://img.shields.io/badge/Tool-Claude_Code-blueviolet)
 ![Type](https://img.shields.io/badge/Type-Plugin-green)
 
@@ -222,6 +222,8 @@ src/
 | -------------------------- | ---- |
 | 문장·표현이 어색하다       | B    |
 | 감정 묘사가 약하다         | B    |
+| 문체가 스타일 프로필과 불일치한다 | B |
+| 챕터 내 문체 일관성이 흔들린다 | B |
 | 씬 순서가 이상하다         | C    |
 | 인물 행동에 납득이 안 된다 | C    |
 | 복선이 누락됐다            | C    |
@@ -274,9 +276,10 @@ src/
 
 **검토·수정 순서**
 
-1. `/review` — 구조·완성도 먼저 확인 (A/B/C 판정)
-2. `/revise` — 검토 주석 처리 (B: 문장 수정, C: 구조 재설계)
-3. `/style` 적용 — 문체가 일관되지 않다고 느껴질 때
+1. `/review` — 구조·완성도·문체 확인 (A/B/C 판정)
+   - `.claude/styles/default.md`가 있으면 스타일 프로필과 자동 대조
+2. `/revise` — 검토 주석 처리 (B: 문장·문체 수정, C: 구조 재설계)
+3. `/style` — 특정 작가 문체 분석·저장 또는 기본 스타일 새로 설정할 때
 
 ## 요구사항
 
