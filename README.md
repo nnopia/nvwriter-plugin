@@ -5,9 +5,6 @@
 ![Type](https://img.shields.io/badge/Type-Plugin-green)
 
 Claude Code용 소설 집필 플러그인입니다. 소프트웨어 개발 방법론(이슈 트래킹, 문서화, 버전 관리)을 소설 집필에 적용한 워크플로우를 8개 커맨드로 제공합니다.
-
-전체 플로우 시각화: `flow-diagram.html`을 브라우저로 열어보세요.
-
 ---
 
 ## 설치
