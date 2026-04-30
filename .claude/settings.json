@@ -1,6 +1,0 @@
-{
-  "enabledPlugins": {
-    "nvwriter@nvwriter-plugin": true,
-    "plugin-dev@claude-plugins-official": true
-  }
-}
