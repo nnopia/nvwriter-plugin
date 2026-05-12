@@ -1,6 +1,6 @@
 # nvwriter
 
-![Version](https://img.shields.io/badge/Version-1.0.5-blue)
+![Version](https://img.shields.io/badge/Version-1.0.7-blue)
 ![Tool](https://img.shields.io/badge/Tool-Claude_Code-blueviolet)
 ![Type](https://img.shields.io/badge/Type-Plugin-green)
 
@@ -230,6 +230,8 @@ src/
 | 감정 묘사가 약하다         | B    |
 | 문체가 스타일 프로필과 불일치한다 | B |
 | 챕터 내 문체 일관성이 흔들린다 | B |
+| 서사에 기여하지 않는 불필요한 문장이 있다 | B |
+| 문장 내 의미 없는 단어·반복 표현이 있다 | B |
 | 씬 순서가 이상하다         | C    |
 | 인물 행동에 납득이 안 된다 | C    |
 | 복선이 누락됐다            | C    |
